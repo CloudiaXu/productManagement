@@ -1,0 +1,14 @@
+html,body{
+    height: 100%;
+}
+body{
+    /*flexbox，是為了適應不同螢幕尺寸和顯示設備而生的佈局模式，flex 是縮寫，裡面依序包含三個屬性 flex-grow、flex-shrink 和 flex-basis，如果只設定一個則是 flex-grow。*/
+    display: flex;
+    /*align-items 決定了內容元素與整個 Flexbox 的「垂直對齊」*/
+    align-items: center;
+    /*justify-content 決定了內容元素與整個 Flexbox 的「水平對齊」*/
+    justify-content: center;
+}
+.title{
+    text-align: center;
+}
