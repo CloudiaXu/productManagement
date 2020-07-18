@@ -197,6 +197,7 @@
 
     <script>
         new Vue({
+            //渲染vue的部分
             el: '#app',
             data: {
                 tempProduct: {},
@@ -229,10 +230,8 @@
 
             },
             methods: {
-                // updateItem() {
-
-                // },
                 updateProduct() {
+                    //透過判斷是否存在id修改或新增資料
                     if (this.tempProduct.id) {
                         const id = this.tempProduct.id;
                         this.products.forEach((item, i) => {
