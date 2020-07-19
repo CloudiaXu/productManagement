@@ -28,17 +28,19 @@
             <div class="row align-items-center">
                 <div class="col  rounded shadow mb-5 bg-white rounded" style="padding: 75px 150px ;">
                     <h3 class="title">請先登入</h3>
-                    <form>
+                    <div>
                         <div class="form-group">
-                            <input type="text" class="form-control" id="account" placeholder="請輸入帳號">
+                            <input type="email" class="form-control" id="email" v-model="user.email"
+                                placeholder="請輸入註冊信箱">
                         </div>
                         <div class="form-group">
-                            <input type="password" class="form-control" id="password" placeholder="請輸入密碼">
+                            <input type="password" class="form-control" id="password" v-model="user.password"
+                                placeholder="請輸入密碼">
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-lg btn-block ">登入</button>
+                        <button type="submit" class="btn btn-primary btn-lg btn-block" @click="login">登入</button>
 
-                    </form>
+                    </div>
                 </div>
 
             </div>
@@ -50,97 +52,47 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
+        const uuid = "f2e83e10-62c2-4f74-a3a9-bf3701db9404";
+        const token = "4hINbxOWxfytrmz2ssUb0WbQApnHFHGya9MVoGhhLHV9DlgIgoYDp1CTbfSM";
+        const apiPath = "https://course-ec-api.hexschool.io/api";
+
+        // var loginForm = document.getElementById("loginForm");
+        // loginForm.addEventListener('submit', handleForm);
+        // function handleForm(event) { event.preventDefault(); }
+
         new Vue({
             //渲染vue的部分
             el: '#app',
             data: {
-                tempProduct: {},
-                products: [
-                    {
-                        id: 1586934917210,
-                        unit: '台',
-                        category: '掌上主機',
-                        title: 'Switch',
-                        origin_price: 20000,
-                        price: 9980,
-                        description: '想玩就玩',
-                        content: '動森太好玩惹',
-                        is_enabled: 1,
-                        imageUrl: 'https://images.unsplash.com/photo-1592107761705-30a1bbc641e7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=934&q=80',
-                    },
-                    {
-                        id: 1196934917910,
-                        unit: '台',
-                        category: '主機',
-                        title: 'PS5 Wifi',
-                        origin_price: 29999,
-                        description: '次世代超強規格',
-                        content: '我也想要換一台 PS5 Wifi',
-                        price: 9487,
-                        is_enabled: 0,
-                        imageUrl: 'https://images.unsplash.com/photo-1592107761705-30a1bbc641e7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=934&q=80',
-                    },
-                ],
-
+                user: {
+                    email: '',
+                    password: '',
+                }
             },
             methods: {
-                updateProduct() {
-                    //透過判斷是否存在id修改或新增資料
-                    if (this.tempProduct.id) {
-                        const id = this.tempProduct.id;
-                        this.products.forEach((item, i) => {
-                            if (item.id === id) {
-                                this.products[i] = this.tempProduct;
+                login() {
+                    // alert(this.user.email + "  " + this.user.password);
+                    //"email": "yun870204@gmail.com", "password": "xa9XNTcipeXKNz7"
+                    //ajax非同步處理
+                    //axios.post(url, data, config)
+                    axios.post(`${apiPath}/auth/login`, { "email": `${this.user.email}`, "password": `${this.user.password}` }, {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    })
+                        .then((res) => {
+                            if (res.data.success) {
+                                // window.location = 'https://newurl.com'
+                                window.location.pathname = './index.html'
                             }
                         })
-                    }
-                    else {
-                        const time = new Date().getTime();
-                        this.tempProduct.id = time;
-                        this.products.push(this.tempProduct);
-                    }
-
-                    this.tempProduct = {};
-                    $('#productModal').modal('hide');
-                },
-                delProduct() {
-                    if (this.tempProduct.id) {
-                        const id = this.tempProduct.id;
-                        this.products.forEach((item, i) => {
-                            if (item.id === id) {
-                                this.products.splice(i, 1);
-                                this.tempProduct = {}
-                            }
-                        })
-                    }
-                    $('#delProductModal').modal('hide');
-                },
-
-                openModal(isNew, item) {
-                    switch (isNew) {
-                        case 'new':
-                            this.tempProduct = {};
-                            $('#productModal').modal('show');
-                            break;
-                        case 'edit':
-                            this.tempProduct = Object.assign({}, item);
-                            $('#productModal').modal('show');
-                            break;
-                        case 'delete':
-                            this.tempProduct = this.tempProduct = Object.assign({}, item);
-                            $('#delProductModal').modal('show');
-                            break;
-                        default:
-                            break;
-                    }
+                        .catch((error) => { console.error(error) })
+                    return false;
                 }
-
-            },
-
-        });
-
+            }
+        })
     </script>
 </body>
 
