@@ -91,7 +91,7 @@
                                 //token = 存在cookie裡的名稱
                                 //expires = 存在cookie裡的到期日
                                 document.cookie = `token=${token}; expires=${new Date(expired * 1000)};path=/`;
-                                window.location.pathname = './test.html';
+                                window.location.pathname = './index.html';
                             }
                         })
                         .catch((error) => { console.error(error) })

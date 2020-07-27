@@ -1,6 +1,10 @@
 import pagination from './pagination.js';
+import createOrEditModal from './createOrEditModal.js';
+import delProductModal from './delProductModal.js';
 //全域變數
 Vue.component('pagination', pagination);
+Vue.component('create-or-edit-modal', createOrEditModal);
+Vue.component('del-product-modal', delProductModal);
 new Vue({
     //渲染vue的部分
     el: '#app',
@@ -8,11 +12,14 @@ new Vue({
         api: {
             uuid: 'f2e83e10-62c2-4f74-a3a9-bf3701db9404',
             path: 'https://course-ec-api.hexschool.io/api',
+            token: '',
         },
         token: '',
         isNew: '',
         pagination: {},
-        tempProduct: {},
+        tempProduct: {
+            imageUrl: []
+        },
         products: [
             {
                 id: 1586934917210,
@@ -45,19 +52,18 @@ new Vue({
         //給予num初始值1
         getProducts(num = 1) {
             const url = `${this.api.path}/${this.api.uuid}/admin/ec/products?page=${num}`;
-            axios.get(url
-                // , {
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //         'Accept': 'application/json',
-                //         'Authorization': `${token}`
-                //     }
-                // }
-            )
+            axios.get(url)
                 .then((res) => {
                     console.table(res.data);
                     this.products = res.data.data;
                     this.pagination = res.data.meta.pagination;
+                    //由外層關閉modal(tempProduct不是空的時候觸發)
+                    if (this.tempProduct.id) {
+                        this.tempProduct = {
+                            imageUrl: [],//若取不到會出錯
+                        };
+                        $('#productModal').modal('hide');
+                    }
                 });
         },
         updateProduct() {
@@ -95,15 +101,19 @@ new Vue({
         openModal(isNew, item) {
             switch (isNew) {
                 case 'new':
-                    this.tempProduct = {};
+                    this.tempProduct = { imageUrl: [] };
                     $('#productModal').modal('show');
                     break;
                 case 'edit':
-                    this.tempProduct = Object.assign({}, item);
-                    $('#productModal').modal('show');
+                    const url = `${this.api.path}/${this.api.uuid}/admin/ec/product/${item.id}`;
+                    axios.get(url)
+                        .then(res => {
+                            this.tempProduct = res.data.data;
+                            $('#productModal').modal('show');
+                        })
                     break;
                 case 'delete':
-                    this.tempProduct = this.tempProduct = Object.assign({}, item);
+                    this.tempProduct = Object.assign({}, item);
                     $('#delProductModal').modal('show');
                     break;
                 default:
@@ -113,8 +123,8 @@ new Vue({
 
     },
     created() {
-        this.token = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, '$1');
-        axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
+        this.api.token = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, '$1');
+        axios.defaults.headers.common['Authorization'] = `Bearer ${this.api.token}`;
         this.getProducts();
     }
 
